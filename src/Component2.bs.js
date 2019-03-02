@@ -27,6 +27,7 @@ function make(greeting, _children) {
                                   return Curry._1(self[/* send */3], /* Click */0);
                                 })
                             }, message), React.createElement("button", {
+                              className: "btn btn-success",
                               onClick: (function (_event) {
                                   return Curry._1(self[/* send */3], /* Toggle */1);
                                 })

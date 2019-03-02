@@ -35,7 +35,7 @@ let make = (~greeting, _children) => {
       <button onClick={_event => self.send(Click)}>
         {ReasonReact.string(message)}
       </button>
-      <button onClick={_event => self.send(Toggle)}>
+      <button className="btn btn-success" onClick={_event => self.send(Toggle)}>
         {ReasonReact.string("Toggle greeting")}
       </button>
       {self.state.show ? ReasonReact.string(greeting) : ReasonReact.null}

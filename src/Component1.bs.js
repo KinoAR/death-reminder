@@ -7,7 +7,7 @@ var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 var component = ReasonReact.statelessComponent("Component1");
 
-function handleClick(_event, _self) {
+function handleClick(_event, self) {
   console.log("clicked Multiple times!");
   return /* () */0;
 }

@@ -2,3 +2,11 @@ body {
   background-color: black;
   color: white;
 }
+div#dateInput {
+  border-radius: 10px;
+  background-color: #080808;
+}
+button#submitButton {
+  background-color: darkred;
+  border: 1px solid white;
+}

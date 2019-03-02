@@ -1,6 +1,19 @@
 @background-color:black;
 @text-color:white;
+@mainbox-color: #080808;
+@mainbutton-color: darkred;
 body {
   background-color: @background-color;
   color:@text-color;
+}
+
+div#dateInput {
+  // border: 1px solid red; 
+  border-radius: 10px;
+  background-color: @mainbox-color;
+}
+
+button#submitButton {
+  background-color: @mainbutton-color;
+  border: 1px solid white;
 }

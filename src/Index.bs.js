@@ -3,8 +3,6 @@
 
 var ReactDOMRe = require("reason-react/src/ReactDOMRe.js");
 var ReasonReact = require("reason-react/src/ReasonReact.js");
-var Component1$ReactTemplate = require("./Component1.bs.js");
-var Component2$ReactTemplate = require("./Component2.bs.js");
 var DateInputComponent$ReactTemplate = require("./DateInputComponent.bs.js");
 
 
@@ -13,10 +11,6 @@ var DateInputComponent$ReactTemplate = require("./DateInputComponent.bs.js");
 
 ;
 
-ReactDOMRe.renderToElementWithId(ReasonReact.element(undefined, undefined, DateInputComponent$ReactTemplate.make("Test Message", /* array */[])), "dateInput");
-
-ReactDOMRe.renderToElementWithId(ReasonReact.element(undefined, undefined, Component1$ReactTemplate.make("Hello! Click this text.", /* array */[])), "index1");
-
-ReactDOMRe.renderToElementWithId(ReasonReact.element(undefined, undefined, Component2$ReactTemplate.make("Hello!", /* array */[])), "index2");
+ReactDOMRe.renderToElementWithId(ReasonReact.element(undefined, undefined, DateInputComponent$ReactTemplate.make("dateInput", /* array */[])), "dateInput");
 
 /*  Not a pure module */
