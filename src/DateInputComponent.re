@@ -15,30 +15,54 @@ type action =
 
 let component = ReasonReact.reducerComponent("DateInput");
 
+let holidayInRange = (startMoment, holidayMoment, endMoment) => {
+  MomentRe.Moment.isBetween(holidayMoment, startMoment, endMoment); 
+};
+let numHolidaysInRange = (startYear, endYear, dateStr, momentRange) => {
+  let amount = ref(0);
+  for(x in startYear to endYear) {
+    let currHolidayMoment = Js.String.concat(dateStr, string_of_int(x), )
+    -> MomentRe.momentDefaultFormat;
+    amount := (momentRange(currHolidayMoment) ? 1 : 0) + amount^;
+  }
+  amount^;
+};
+
 let createDateComponents = (state) => {
   let startDate = MomentRe.momentDefaultFormat(state.startDate);
   let endDate = MomentRe.momentDefaultFormat(state.endDate);
   let years = endDate
   -> MomentRe.diff(startDate, `years) -> int_of_float;
-  let currentYear = MomentRe.momentNow() |> MomentRe.Moment.get(`year) |> string_of_int;
-  let appendYear = Js.String.concat(currentYear)
+  let currentYear = MomentRe.momentNow() |> MomentRe.Moment.get(`year);
+
   let typesOfDates = [
-    (MomentRe.momentDefaultFormat(appendYear("-02-14")), "Valentine's"), 
-    (MomentRe.momentDefaultFormat(appendYear("-12-25")), "Christmas"),
-    (MomentRe.momentDefaultFormat(appendYear("-12-31")), "New Year's")
+    ("-01-01", "New Year's"),
+    ("-02-14", "Valentine's"), 
+    ("-07-04", "Independence"),
+    ("-11-25", "Thanksgiving"),
+    ("-12-24", "Christmas Eve"),
+    ("-12-25", "Christmas"),
+    ("-12-31", "New Year's Eve")
   ];
   
   let dateList = List.mapi((index, element) => {
-    let (moment, holidayName) = element;
-    let adjustedYear = MomentRe.Moment.isAfter(startDate, moment) ? years - 1 : years;
-    let daysFormat = adjustedYear > 1 ? "Days" : "Day";
+    let (dateStr, holidayName) = element;
+    let momentRange = holidayInRange(startDate,_,endDate);
+    let holidayAmount = numHolidaysInRange(currentYear, currentYear + years, 
+      dateStr, momentRange);
+    let daysFormat = holidayAmount > 1 ? "Days" : "Day";
     <div key={index -> string_of_int} className="col-12">
-      {ReasonReact.string(string_of_int(adjustedYear) ++ " " ++holidayName ++ " " ++ daysFormat)}
+      {ReasonReact.string(string_of_int(holidayAmount) ++ " " ++holidayName ++ " " ++ daysFormat)}
     </div>
   }, typesOfDates);
-  <div className="row">
-    <h1> {ReasonReact.string("You have...")} </h1>
+  <div className="row text-center">
+    <div className="col-12">
+      <h1> {ReasonReact.string("You have...")} </h1>
+    </div>
     (ReasonReact.array(Array.of_list(dateList)))
+    <div className="col-12">
+      <h1> {ReasonReact.string("Left.")} </h1>
+    </div>
   </div>;
 }
 

@@ -11,45 +11,88 @@ var ReasonReact = require("reason-react/src/ReasonReact.js");
 
 var component = ReasonReact.reducerComponent("DateInput");
 
+function holidayInRange(startMoment, holidayMoment, endMoment) {
+  return holidayMoment.isBetween(startMoment, endMoment);
+}
+
+function numHolidaysInRange(startYear, endYear, dateStr, momentRange) {
+  var amount = 0;
+  for(var x = startYear; x <= endYear; ++x){
+    var currHolidayMoment = Moment(String(x).concat(dateStr));
+    var match = Curry._1(momentRange, currHolidayMoment);
+    amount = (
+      match ? 1 : 0
+    ) + amount | 0;
+  }
+  return amount;
+}
+
 function createDateComponents(state) {
   var startDate = Moment(state[/* startDate */2]);
   var endDate = Moment(state[/* endDate */3]);
   var years = endDate.diff(startDate, "years") | 0;
-  var currentYear = String(Moment().get("year"));
-  var typesOfDates_000 = /* tuple */[
-    Moment("-02-14".concat(currentYear)),
-    "Valentine's"
-  ];
-  var typesOfDates_001 = /* :: */[
-    /* tuple */[
-      Moment("-12-25".concat(currentYear)),
-      "Christmas"
-    ],
-    /* :: */[
-      /* tuple */[
-        Moment("-12-31".concat(currentYear)),
-        "New Year's"
-      ],
-      /* [] */0
-    ]
-  ];
-  var typesOfDates = /* :: */[
-    typesOfDates_000,
-    typesOfDates_001
-  ];
+  var currentYear = Moment().get("year");
   var dateList = List.mapi((function (index, element) {
-          var match = startDate.isAfter(element[0]);
-          var adjustedYear = match ? years - 1 | 0 : years;
-          var match$1 = adjustedYear > 1;
-          var daysFormat = match$1 ? "Days" : "Day";
+          var momentRange = function (__x) {
+            return __x.isBetween(startDate, endDate);
+          };
+          var holidayAmount = numHolidaysInRange(currentYear, currentYear + years | 0, element[0], momentRange);
+          var match = holidayAmount > 1;
+          var daysFormat = match ? "Days" : "Day";
           return React.createElement("div", {
                       key: String(index),
                       className: "col-12"
-                    }, String(adjustedYear) + (" " + (element[1] + (" " + daysFormat))));
-        }), typesOfDates);
+                    }, String(holidayAmount) + (" " + (element[1] + (" " + daysFormat))));
+        }), /* :: */[
+        /* tuple */[
+          "-01-01",
+          "New Year's"
+        ],
+        /* :: */[
+          /* tuple */[
+            "-02-14",
+            "Valentine's"
+          ],
+          /* :: */[
+            /* tuple */[
+              "-07-04",
+              "Independence"
+            ],
+            /* :: */[
+              /* tuple */[
+                "-11-25",
+                "Thanksgiving"
+              ],
+              /* :: */[
+                /* tuple */[
+                  "-12-24",
+                  "Christmas Eve"
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "-12-25",
+                    "Christmas"
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      "-12-31",
+                      "New Year's Eve"
+                    ],
+                    /* [] */0
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]);
   return React.createElement("div", {
-              className: "row"
-            }, React.createElement("h1", undefined, "You have..."), $$Array.of_list(dateList));
+              className: "row text-center"
+            }, React.createElement("div", {
+                  className: "col-12"
+                }, React.createElement("h1", undefined, "You have...")), $$Array.of_list(dateList), React.createElement("div", {
+                  className: "col-12"
+                }, React.createElement("h1", undefined, "Left.")));
 }
 
 function updateDate(action, $$event, self) {
@@ -147,6 +190,8 @@ function make(name, _children) {
 }
 
 exports.component = component;
+exports.holidayInRange = holidayInRange;
+exports.numHolidaysInRange = numHolidaysInRange;
 exports.createDateComponents = createDateComponents;
 exports.updateDate = updateDate;
 exports.make = make;
