@@ -18,23 +18,24 @@ let component = ReasonReact.reducerComponent("DateInput");
 let holidayInRange = (startMoment, holidayMoment, endMoment) => {
   MomentRe.Moment.isBetween(holidayMoment, startMoment, endMoment); 
 };
-let numHolidaysInRange = (startYear, endYear, dateStr, momentRange) => {
-  let amount = ref(0);
-  for(x in startYear to endYear) {
-    let currHolidayMoment = Js.String.concat(dateStr, string_of_int(x), )
-    -> MomentRe.momentDefaultFormat;
-    amount := (momentRange(currHolidayMoment) ? 1 : 0) + amount^;
+let rec numHolidaysInRangeRec = (startYear, finalYear, dateStr, momentRange) => {
+  let currHolidayMoment =
+    Js.String.concat(dateStr, string_of_int(finalYear))
+    ->MomentRe.momentDefaultFormat;
+  let amount = momentRange(currHolidayMoment) ? 1 : 0;
+  if(startYear == finalYear) {
+    amount
+  } else {    
+    amount + numHolidaysInRangeRec(startYear, finalYear - 1, 
+      dateStr, momentRange);
   }
-  amount^;
 };
 
 let createDateComponents = (state) => {
   let startDate = MomentRe.momentDefaultFormat(state.startDate);
   let endDate = MomentRe.momentDefaultFormat(state.endDate);
-  let years = endDate
-  -> MomentRe.diff(startDate, `years) -> int_of_float;
-  let currentYear = MomentRe.momentNow() |> MomentRe.Moment.get(`year);
-
+  let startYear = startDate |> MomentRe.Moment.get(`year);
+  let endYear = endDate |> MomentRe.Moment.get(`year);
   let typesOfDates = [
     ("-01-01", "New Year's"),
     ("-02-14", "Valentine's"), 
@@ -48,7 +49,7 @@ let createDateComponents = (state) => {
   let dateList = List.mapi((index, element) => {
     let (dateStr, holidayName) = element;
     let momentRange = holidayInRange(startDate,_,endDate);
-    let holidayAmount = numHolidaysInRange(currentYear, currentYear + years, 
+    let holidayAmount = numHolidaysInRangeRec(startYear, endYear, 
       dateStr, momentRange);
     let daysFormat = holidayAmount > 1 ? "Days" : "Day";
     <div key={index -> string_of_int} className="col-12">

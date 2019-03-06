@@ -15,28 +15,27 @@ function holidayInRange(startMoment, holidayMoment, endMoment) {
   return holidayMoment.isBetween(startMoment, endMoment);
 }
 
-function numHolidaysInRange(startYear, endYear, dateStr, momentRange) {
-  var amount = 0;
-  for(var x = startYear; x <= endYear; ++x){
-    var currHolidayMoment = Moment(String(x).concat(dateStr));
-    var match = Curry._1(momentRange, currHolidayMoment);
-    amount = (
-      match ? 1 : 0
-    ) + amount | 0;
+function numHolidaysInRangeRec(startYear, finalYear, dateStr, momentRange) {
+  var currHolidayMoment = Moment(String(finalYear).concat(dateStr));
+  var match = Curry._1(momentRange, currHolidayMoment);
+  var amount = match ? 1 : 0;
+  if (startYear === finalYear) {
+    return amount;
+  } else {
+    return amount + numHolidaysInRangeRec(startYear, finalYear - 1 | 0, dateStr, momentRange) | 0;
   }
-  return amount;
 }
 
 function createDateComponents(state) {
   var startDate = Moment(state[/* startDate */2]);
   var endDate = Moment(state[/* endDate */3]);
-  var years = endDate.diff(startDate, "years") | 0;
-  var currentYear = Moment().get("year");
+  var startYear = startDate.get("year");
+  var endYear = endDate.get("year");
   var dateList = List.mapi((function (index, element) {
           var momentRange = function (__x) {
             return __x.isBetween(startDate, endDate);
           };
-          var holidayAmount = numHolidaysInRange(currentYear, currentYear + years | 0, element[0], momentRange);
+          var holidayAmount = numHolidaysInRangeRec(startYear, endYear, element[0], momentRange);
           var match = holidayAmount > 1;
           var daysFormat = match ? "Days" : "Day";
           return React.createElement("div", {
@@ -191,7 +190,7 @@ function make(name, _children) {
 
 exports.component = component;
 exports.holidayInRange = holidayInRange;
-exports.numHolidaysInRange = numHolidaysInRange;
+exports.numHolidaysInRangeRec = numHolidaysInRangeRec;
 exports.createDateComponents = createDateComponents;
 exports.updateDate = updateDate;
 exports.make = make;
